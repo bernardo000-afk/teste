@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Para a minha Lua</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+      color: #f8f9fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      user-select: none;
+    }
+
+    /* Estrelas no fundo */
+    .estrela {
+      position: absolute;
+      background-color: #ffffff;
+      border-radius: 50%;
+      animation: piscar infinite alternate;
+      z-index: 1;
+    }
+
+    @keyframes piscar {
+      0% { opacity: 0.2; transform: scale(0.8); }
+      100% { opacity: 1; transform: scale(1.2); }
+    }
+
+    /* A Lua em CSS puro */
+    .lua {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #fffdf5, #e6dec8 60%, #b5ab94 100%);
+      box-shadow: 0 0 40px 10px rgba(255, 253, 224, 0.35),
+                  0 0 90px 25px rgba(255, 253, 224, 0.15);
+      margin-bottom: 30px;
+      position: relative;
+      z-index: 2;
+      animation: flutuar 6s ease-in-out infinite;
+    }
+
+    /* Detalhes sutis de crateras na Lua */
+    .lua::before, .lua::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(160, 150, 130, 0.25);
+    }
+
+    .lua::before {
+      width: 24px;
+      height: 24px;
+      top: 25px;
+      left: 25px;
+    }
+
+    .lua::after {
+      width: 16px;
+      height: 16px;
+      bottom: 30px;
+      right: 28px;
+    }
+
+    @keyframes flutuar {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* Cartão de conteúdo */
+    .container {
+      z-index: 3;
+      padding: 20px;
+      max-width: 500px;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 400;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+    }
+
+    p.subtitulo {
+      font-size: 1rem;
+      color: #cbd5e1;
+      margin-bottom: 35px;
+      font-style: italic;
+    }
+
+    /* Área dos botões */
+    .botoes {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      align-items: center;
+      min-height: 60px;
+    }
+
+    button {
+      padding: 14px 32px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    #btn-sim {
+      background: linear-gradient(45deg, #ff4d6d, #ff758f);
+      color: white;
+      box-shadow: 0 0 20px rgba(255, 77, 109, 0.5);
+      z-index: 4;
+    }
+
+    #btn-sim:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 30px rgba(255, 77, 109, 0.8);
+    }
+
+    #btn-nao {
+      background-color: rgba(255, 255, 255, 0.15);
+      color: #e2e8f0;
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      z-index: 4;
+    }
+
+    /* Mensagem final após aceitar */
+    #resposta-final {
+      display: none;
+      margin-top: 20px;
+      animation: surgir 1s ease forwards;
+    }
+
+    #resposta-final h2 {
+      color: #ff758f;
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+
+    @keyframes surgir {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Partículas comemorativas */
+    .particula {
+      position: absolute;
+      pointer-events: none;
+      z-index: 5;
+      animation: cair 3.5s linear forwards;
+    }
+
+    @keyframes cair {
+      0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="lua"></div>
+
+  <div class="container" id="caixa-pergunta">
+    <h1>Quer namorar comigo?</h1>
+    <p class="subtitulo">"Nem todas as estrelas do céu brilham tanto quanto você para mim."</p>
+
+    <div class="botoes">
+      <button id="btn-sim">Sim, eu aceito! 🌙</button>
+      <button id="btn-nao">Não</button>
+    </div>
+  </div>
+
+  <div class="container" id="resposta-final">
+    <h2>Sabia que você diria sim! ✨</h2>
+    <p class="subtitulo">Feliz Aniversário! 🎂</p>
+  </div>
+
+  <script>
+    // 1. Gerar céu estrelado dinamicamente
+    function criarEstrelas() {
+      const totalEstrelas = 90;
+      for (let i = 0; i < totalEstrelas; i++) {
+        const estrela = document.createElement('div');
+        estrela.classList.add('estrela');
+        
+        const tamanho = Math.random() * 3 + 1;
+        estrela.style.width = `${tamanho}px`;
+        estrela.style.height = `${tamanho}px`;
+        estrela.style.left = `${Math.random() * 100}vw`;
+        estrela.style.top = `${Math.random() * 100}vh`;
+        estrela.style.animationDuration = `${Math.random() * 2 + 1.5}s`;
+        
+        document.body.appendChild(estrela);
+      }
+    }
+    criarEstrelas();
+
+    // 2. Lógica de fuga do botão "Não" (funciona no PC e no Celular)
+    const btnNao = document.getElementById('btn-nao');
+
+    function fugir() {
+      // Calcula limites seguros para o botão não sair da tela
+      const larguraJanela = window.innerWidth;
+      const alturaJanela = window.innerHeight;
+      const larguraBtn = btnNao.offsetWidth;
+      const alturaBtn = btnNao.offsetHeight;
+
+      const margem = 20;
+      const novoX = Math.random() * (larguraJanela - larguraBtn - margem * 2) + margem;
+      const novoY = Math.random() * (alturaJanela - alturaBtn - margem * 2) + margem;
+
+      btnNao.style.position = 'fixed';
+      btnNao.style.left = `${novoX}px`;
+      btnNao.style.top = `${novoY}px`;
+    }
+
+    // Dispara ao passar o mouse (PC) ou tentar tocar (Celular)
+    btnNao.addEventListener('mouseover', fugir);
+    btnNao.addEventListener('touchstart', (e) => {
+      e.preventDefault(); // Impede o clique acidental no toque
+      fugir();
+    });
+
+    // 3. Ação ao clicar em "Sim"
+    const btnSim = document.getElementById('btn-sim');
+    const caixaPergunta = document.getElementById('caixa-pergunta');
+    const respostaFinal = document.getElementById('resposta-final');
+
+    btnSim.addEventListener('click', () => {
+      caixaPergunta.style.display = 'none';
+      btnNao.style.display = 'none';
+      respostaFinal.style.display = 'block';
+
+      // Dispara chuva de luas, estrelas e corações
+      const simbolos = ['🌙', '✨', '❤️', '⭐', '🎂', '🎉', '🥳'];
+      setInterval(() => {
+        const particula = document.createElement('div');
+        particula.classList.add('particula');
+        particula.innerText = simbolos[Math.floor(Math.random() * simbolos.length)];
+        particula.style.left = `${Math.random() * 100}vw`;
+        particula.style.fontSize = `${Math.random() * 16 + 16}px`;
+        
+        document.body.appendChild(particula);
+
+        setTimeout(() => {
+          particula.remove();
+        }, 3500);
+      }, 150);
+    });
+  </script>
+</body>
+</html>
